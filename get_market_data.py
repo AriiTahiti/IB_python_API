@@ -8,8 +8,8 @@ class TestApp(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
 
-    def error(self, reqId, errorCode, errorString):
-        print('Error',  reqId, " ", errorCode, ' ', errorString)
+    def error(self, req_id, error_code, error_string):
+        print(f'For request {req_id} we get error {error_code} : {error_string}')
 
     def contractDetails(self, reqId, contractDetails):
         print('contract details: ', reqId, ' ',  contractDetails)
@@ -24,24 +24,17 @@ class TestApp(EWrapper, EClient):
         print('HistoricalData', reqId, 'date:', bar.date, "Open:", bar.open)
 
 
-def main():
+app = TestApp()
+app.connect('127.0.0.1', 7497, 0)
 
-    app = TestApp()
+contract = Contract()
+contract.symbol = 'AC'
+contract.secType = 'STK'
+contract.exchange = 'SMART'
+contract.currency = 'USD'
+contract.primaryExchange = 'NASDAQ'
 
-    app.connect('127.0.0.1', 7497, 0)
+app.reqContractDetails(1, contract)
+app.reqHistoricalData(1, contract, "", "1 D", "1 hour", "MIDPOINT", 0, 1, False, [])
 
-    contract = Contract()
-    contract.symbol = 'AC'
-    contract.secType = 'STK'
-    contract.exchange = 'SMART'
-    contract.currency = 'USD'
-    contract.primaryExchange = 'NASDAQ'
-
-    app.reqContractDetails(1, contract)
-    app.reqHistoricalData(1, contract, "", "1 D", "1 hour", "MIDPOINT", 0, 1, False, [])
-
-    app.run()
-
-
-if __name__ == '__main__':
-    main()
+app.run()
